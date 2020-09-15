@@ -7,24 +7,36 @@ pygame.init()
 
 pygame.display.set_caption("Snake")
 
+global linewidth
+linewidth = 1
+
+global sizex 
+global sizey 
+sizex = 30
+sizey = 30
+
+global color
+color = (225,225 , 225 )
+
+global squaresize
+
+if sizex > sizey or sizey == sizex:
+    squaresize = int( ( 979 - 23) /sizex)
+else:
+    squaresize = int(1680 /sizey)
+
+global winxlength
+winxlength = sizex * squaresize
+global winywidth
+winywidth = sizey * squaresize
+
+global win
+win = pygame.display.set_mode((winywidth + linewidth, winxlength + linewidth))
+
+global strawberry
+straberry = pygame.image.load("pixil-frame-0.png")
+
 def titlescreen():
-
-    pygame.mouse.set_visible(True)
-
-    linewidth = 1
-    sizex = 15
-    sizey = 15
-
-    color = (225,225 , 225 )
-
-    if sizex > sizey or sizey == sizex:
-        squaresize = int( ( 979 - 23) /sizex)
-    else:
-        squaresize = int(1680 /sizey)
-
-    winxlength = sizex * squaresize
-    winywidth = sizey * squaresize
-    win = pygame.display.set_mode((winywidth + linewidth, winxlength + linewidth))
 
     font = pygame.font.Font('freesansbold.ttf', 80)    
     text = font.render('Start Game', True, (255,0,0)) 
@@ -68,26 +80,6 @@ def snake():
 
     pygame.mouse.set_visible(False)
 
-    linewidth = 1
-
-    sizex = 15
-    sizey = 15
-
-    color = (225,225 , 225 )
-
-    pop = True
-
-    
-
-    if sizex > sizey or sizey == sizex:
-        squaresize = int( ( 979 - 23) /sizex)
-    else:
-        squaresize = int(1680 /sizey)
-
-    winxlength = sizex * squaresize
-    winywidth = sizey * squaresize
-    win = pygame.display.set_mode((winywidth + linewidth, winxlength + linewidth))
-
     class snakeblock:
         def __init__(self, x, y):
             self.x = x
@@ -109,16 +101,23 @@ def snake():
             self.y = y 
             self.color = color
         def draw(self):
-            pygame.draw.rect(win, self.color, (self.x * squaresize, self.y * squaresize, squaresize, squaresize))
+            
+            if self.easteregg == False:
+                pygame.draw.rect(win, self.color, (self.x * squaresize, self.y * squaresize, squaresize, squaresize))
+            else:
+                win.blit(straberry, (self.x * squaresize, self.y * squaresize))
+    
+    pop = True
 
     lists2 = []
 
-    lists2.append(fruitblock(random.randint(0, sizex-1), random.randint(0, sizey-1), (0, 225, 0)))
+    lists2.append(fruitblock(random.randint(1, sizex-2), random.randint(1, sizey-2), (0, 225, 0)))
+    lists2[0].easteregg = False
 
     global lists
 
-    randomx = random.randint(5, sizex - 6)
-    randomy = random.randint(5, sizey - 6)
+    randomx = random.randint(6, sizex - 7)
+    randomy = random.randint(6, sizey - 7)
 
     orentation = random.randint(0, 3)
 
@@ -137,6 +136,9 @@ def snake():
 
     sets = set()
 
+    delay = 30
+    count = 0
+
     run = True
     while run:
 
@@ -146,6 +148,8 @@ def snake():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+
+        pygame.time.delay(delay)
 
         keys = pygame.key.get_pressed()
             
@@ -233,6 +237,11 @@ def snake():
             pop = False
             lists2.clear()
             lists2.append(fruitblock(random.randint(0, sizex-1), random.randint(0, sizey-1), (0, 225, 0)))
+            if random.randint(0, 200) == 0:
+                lists2[0].easteregg = True
+            else:
+                lists2[0].easteregg = False
+            
 
         for x in range(0, len(lists)):
             lists[x].draw()
@@ -256,28 +265,18 @@ def snake():
         for x in range( 0 , sizey + 1):
             pygame.draw.line( win , color, ( x * squaresize, 0), ( x * squaresize, winxlength), linewidth) 
 
+        if delay != 0: 
+            if count % 4 == 0 :
+                delay = delay - 1
+            count = count + 1 
+
         pygame.display.update() 
     
 def endscreen():
 
     pygame.mouse.set_visible(True)
 
-    linewidth = 1
-    sizex = 15
-    sizey = 15
-
-    color = (225,225 , 225 )
-
-    if sizex > sizey or sizey == sizex:
-        squaresize = int( ( 979 - 23) /sizex)
-    else:
-        squaresize = int(1680 /sizey)
-
     score = len(lists) - 4
-
-    winxlength = sizex * squaresize
-    winywidth = sizey * squaresize
-    win = pygame.display.set_mode((winywidth + linewidth, winxlength + linewidth))
 
     font = pygame.font.Font('freesansbold.ttf', 80)    
     text = font.render('You Died', True, (255,0,0)) 
@@ -344,21 +343,6 @@ def endscreen():
 def winscreen():
     pygame.mouse.set_visible(True)
 
-    linewidth = 1
-    sizex = 15
-    sizey = 15
-
-    color = (225,225 , 225 )
-
-    if sizex > sizey or sizey == sizex:
-        squaresize = int( ( 979 - 23) /sizex)
-    else:
-        squaresize = int(1680 /sizey)
-
-    winxlength = sizex * squaresize
-    winywidth = sizey * squaresize
-    win = pygame.display.set_mode((winywidth + linewidth, winxlength + linewidth))
-
     font = pygame.font.Font('freesansbold.ttf', 80)    
     text = font.render('You Win', True, (255,0,0)) 
     textRect = text.get_rect()
@@ -384,8 +368,6 @@ def winscreen():
 
         for x in range( 0 , sizey + 1):
             pygame.draw.line( win , color, ( x * squaresize, 0), ( x * squaresize, winxlength), linewidth) 
-
-        keys = pygame.key.get_pressed()
             
         pygame.draw.rect(win, (0,0,0), textRect)
 
